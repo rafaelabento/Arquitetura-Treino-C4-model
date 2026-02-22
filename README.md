@@ -1,48 +1,66 @@
 ```mermaid
 flowchart TB
 
-%% Person
-Client["Cliente (Person)"]
+%% ===== PERSON =====
+Client["<<Person>>
+Cliente"]
 
-%% System Boundary
-subgraph OnboardingPlatform["Plataforma de Onboarding Digital"]
+%% ===== SYSTEM BOUNDARY =====
+subgraph SystemBoundary["<<Software System>>
+Plataforma de Onboarding Digital"]
 
-MobileApp["Aplicação Mobile
-Container: Mobile Application
-Responsável por cadastro e submissão de dados"]
+direction TB
 
-OnboardingService["Onboarding Service
-Container: Backend Service
-Orquestra cadastro e inicia processamento"]
+MobileApp["<<Container>>
+Aplicação Mobile
+Mobile Application"]
 
-MessageBroker["Message Broker
-Container: Message Broker
-Comunicação assíncrona"]
+OnboardingService["<<Container>>
+Onboarding Service
+Backend Service"]
 
-IntegrationLayer["Integration Layer
-Container: Integration Service
-Integra sistemas externos"]
+MessageBroker["<<Container>>
+Message Broker
+Message Broker"]
 
-Database["Database
-Container: Relational Database
-Armazena dados e status"]
+IntegrationLayer["<<Container>>
+Integration Layer
+Integration Service"]
+
+Database["<<Container>>
+Database
+Relational Database"]
 
 end
 
-%% External Systems
-Auth["Autenticação e Autorização (Software System)"]
-Biometric["Validação Biométrica (Software System)"]
-Fraud["Sistema Anti-Fraude (Software System)"]
-Core["Core Bancário (Software System)"]
-Signature["Assinatura Digital (Software System)"]
+%% ===== EXTERNAL SYSTEMS =====
+Auth["<<Software System>>
+Autenticação e Autorização"]
 
-%% Relationships
+Biometric["<<Software System>>
+Validação Biométrica"]
+
+Fraud["<<Software System>>
+Sistema Anti-Fraude"]
+
+Core["<<Software System>>
+Core Bancário"]
+
+Signature["<<Software System>>
+Assinatura Digital"]
+
+%% ===== RELATIONSHIPS =====
 Client -->|Uses| MobileApp
-MobileApp -->|HTTPS REST synchronous| OnboardingService
+
+MobileApp -->|HTTPS / REST (sync)| OnboardingService
+
 OnboardingService -->|Reads/Writes| Database
+
 OnboardingService -->|Publishes OnboardingRequested| MessageBroker
 MessageBroker -->|Delivers Event| OnboardingService
-OnboardingService -->|Invokes synchronous| IntegrationLayer
+
+OnboardingService -->|Invokes (sync)| IntegrationLayer
+
 IntegrationLayer -->|REST| Auth
 IntegrationLayer -->|REST| Biometric
 IntegrationLayer -->|REST| Fraud
