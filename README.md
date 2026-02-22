@@ -1,39 +1,37 @@
-flowchart TD
-    A[Cliente]
-    B[Digital Partner System]
+```mermaid
+flowchart TB
 
-    C[Autenticação e Autorização]
-    D[Validação Biométrica]
-    E[Sistema Anti-fraude]
-    F[Core Bancário]
-    G[Assinatura Digital]
+%% Person
+Client["<<Person>> Cliente"]
 
-    H[Aplicação Mobile]
-    I[Onboarding Service]
-    J[Integration Layer]
-    K[Data Base]
-    L[Message Broker]
+%% System Boundary
+subgraph SystemBoundary["<<Software System>> Plataforma de Onboarding Digital"]
 
-    A --> B
+MobileApp["<<Container>> Aplicacao Mobile"]
+OnboardingService["<<Container>> Onboarding Service"]
+MessageBroker["<<Container>> Message Broker"]
+IntegrationLayer["<<Container>> Integration Layer"]
+Database["<<Container>> Database"]
 
-    B --> C
-    B --> D
-    B --> F
+end
 
-    C --> D
-    D --> E
-    E --> F
-    F --> G
+%% External Systems
+Auth["<<Software System>> Autenticacao e Autorizacao"]
+Biometric["<<Software System>> Validacao Biometrica"]
+Fraud["<<Software System>> Sistema AntiFraude"]
+Core["<<Software System>> Core Bancario"]
+Signature["<<Software System>> Assinatura Digital"]
 
-    H --> I
-    I --> J
-    J --> E
-    J --> F
-    J --> G
-
-    I --> L
-    J --> K
-
-    C --> H
-    D --> I
-    E --> J
+%% Relationships
+Client -->|Uses| MobileApp
+MobileApp -->|REST synchronous| OnboardingService
+OnboardingService -->|Reads Writes| Database
+OnboardingService -->|Publishes Event| MessageBroker
+MessageBroker -->|Delivers Event| OnboardingService
+OnboardingService -->|Invokes Integration| IntegrationLayer
+IntegrationLayer -->|Calls| Auth
+IntegrationLayer -->|Calls| Biometric
+IntegrationLayer -->|Calls| Fraud
+IntegrationLayer -->|Calls| Core
+IntegrationLayer -->|Calls| Signature
+```
